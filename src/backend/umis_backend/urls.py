@@ -16,6 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.static import serve
+from django.conf import settings
+import os
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -32,6 +35,16 @@ urlpatterns = [
     # API Version 1 Endpoints
     path('api/v1/', include('beneficiaries.urls')),
     
+    # Serve pre-compiled static Next.js frontend assets (for offline wheel distribution)
+    path('_next/<path:path>', serve, {'document_root': os.path.join(settings.BASE_DIR, 'static', '_next')}),
+    path('favicon.ico', serve, {'document_root': os.path.join(settings.BASE_DIR, 'static'), 'path': 'favicon.ico'}),
+    path('file.svg', serve, {'document_root': os.path.join(settings.BASE_DIR, 'static'), 'path': 'file.svg'}),
+    path('globe.svg', serve, {'document_root': os.path.join(settings.BASE_DIR, 'static'), 'path': 'globe.svg'}),
+    path('next.svg', serve, {'document_root': os.path.join(settings.BASE_DIR, 'static'), 'path': 'next.svg'}),
+    path('vercel.svg', serve, {'document_root': os.path.join(settings.BASE_DIR, 'static'), 'path': 'vercel.svg'}),
+    path('window.svg', serve, {'document_root': os.path.join(settings.BASE_DIR, 'static'), 'path': 'window.svg'}),
+    
     # Serve pre-compiled static Next.js frontend home page
     path('', IndexView.as_view(), name='index'),
 ]
+
