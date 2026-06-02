@@ -7,8 +7,8 @@ export interface Region {
 
 export interface Site {
   id: string;
-  region: string;
-  region_name: string;
+  region: string | null;
+  region_name: string | null;
   name: string;
   created_at: string;
   updated_at: string;
@@ -36,10 +36,10 @@ export interface Employee {
   last_name: string;
   post_name: string | null;
   first_name: string;
-  site: string;
-  site_name: string;
-  region_id: string;
-  region_name: string;
+  site: string | null;
+  site_name: string | null;
+  region_id: string | null;
+  region_name: string | null;
   address: string | null;
   employment_status: EmploymentStatus;
   dependents: Dependent[];
