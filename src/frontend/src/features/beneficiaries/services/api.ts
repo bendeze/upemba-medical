@@ -62,6 +62,29 @@ async function apiRequest<T>(
   return response.json();
 }
 
+// Helper functions to translate naming fields between frontend (first_name, post_name, last_name)
+// and backend (nom, post_nom, prenom) to reconcile with the updated backend employee model.
+function mapEmployeeToBackend(frontendEmp: any): any {
+  if (!frontendEmp) return frontendEmp;
+  const { first_name, last_name, post_name, ...rest } = frontendEmp;
+  const mapped: any = { ...rest };
+  if (first_name !== undefined) mapped.nom = first_name;
+  if (last_name !== undefined) mapped.prenom = last_name;
+  if (post_name !== undefined) mapped.post_nom = post_name;
+  return mapped;
+}
+
+function mapEmployeeFromBackend(backendEmp: any): Employee {
+  if (!backendEmp) return backendEmp;
+  const { nom, prenom, post_nom, ...rest } = backendEmp;
+  return {
+    ...rest,
+    first_name: nom || '',
+    last_name: prenom || '',
+    post_name: post_nom || null,
+  } as Employee;
+}
+
 export const api = {
   // Authentication
   async login(username: string, password: string): Promise<{ access: string; refresh: string }> {
@@ -90,10 +113,26 @@ export const api = {
     return apiRequest<Region>('/v1/regions/', 'POST', { name });
   },
 
+  updateRegion(id: string, name: string): Promise<Region> {
+    return apiRequest<Region>(`/v1/regions/${id}/`, 'PUT', { name });
+  },
+
+  deleteRegion(id: string): Promise<void> {
+    return apiRequest<void>(`/v1/regions/${id}/`, 'DELETE');
+  },
+
   // Sites
   getSites(regionId?: string): Promise<Site[]> {
     const query = regionId ? `?region=${regionId}` : '';
     return apiRequest<Site[]>(`/v1/sites/${query}`);
+  },
+
+  createSite(regionId: string, name: string): Promise<Site> {
+    return apiRequest<Site>('/v1/sites/', 'POST', { region: regionId, name });
+  },
+
+  updateSite(id: string, regionId: string, name: string): Promise<Site> {
+    return apiRequest<Site>(`/v1/sites/${id}/`, 'PUT', { region: regionId, name });
   },
 
   // Employees
@@ -112,16 +151,21 @@ export const api = {
     if (params.status) queryParts.push(`employment_status=${params.status}`);
     
     const query = queryParts.length > 0 ? `?${queryParts.join('&')}` : '';
-    return apiRequest<{ count: number; next: string | null; previous: string | null; results: Employee[] }>(
+    const data = await apiRequest<{ count: number; next: string | null; previous: string | null; results: any[] }>(
       `/v1/employees/${query}`
     );
+    return {
+      ...data,
+      results: data.results.map(mapEmployeeFromBackend),
+    };
   },
 
-  getEmployee(id: string): Promise<Employee> {
-    return apiRequest<Employee>(`/v1/employees/${id}/`);
+  async getEmployee(id: string): Promise<Employee> {
+    const data = await apiRequest<any>(`/v1/employees/${id}/`);
+    return mapEmployeeFromBackend(data);
   },
 
-  createEmployee(employee: {
+  async createEmployee(employee: {
     employee_number: string;
     last_name: string;
     post_name?: string;
@@ -130,10 +174,12 @@ export const api = {
     address?: string;
     employment_status: string;
   }): Promise<Employee> {
-    return apiRequest<Employee>('/v1/employees/', 'POST', employee);
+    const backendData = mapEmployeeToBackend(employee);
+    const data = await apiRequest<any>('/v1/employees/', 'POST', backendData);
+    return mapEmployeeFromBackend(data);
   },
 
-  updateEmployee(id: string, employee: Partial<{
+  async updateEmployee(id: string, employee: Partial<{
     employee_number: string;
     last_name: string;
     post_name?: string;
@@ -142,7 +188,9 @@ export const api = {
     address?: string;
     employment_status: string;
   }>): Promise<Employee> {
-    return apiRequest<Employee>(`/v1/employees/${id}/`, 'PUT', employee);
+    const backendData = mapEmployeeToBackend(employee);
+    const data = await apiRequest<any>(`/v1/employees/${id}/`, 'PUT', backendData);
+    return mapEmployeeFromBackend(data);
   },
 
   deleteEmployee(id: string): Promise<void> {
@@ -156,7 +204,10 @@ export const api = {
     relationship: 'SPOUSE' | 'CHILD';
     birth_date?: string;
   }): Promise<Dependent> {
-    return apiRequest<Dependent>(`/v1/employees/${employeeId}/dependents/`, 'POST', dependent);
+    return apiRequest<Dependent>(`/v1/employees/${employeeId}/dependents/`, 'POST', {
+      ...dependent,
+      employee: employeeId,
+    });
   },
 
   updateDependent(id: string, dependent: Partial<{
@@ -164,6 +215,7 @@ export const api = {
     gender: 'M' | 'F';
     relationship: 'SPOUSE' | 'CHILD';
     birth_date?: string;
+    employee?: string;
   }>): Promise<Dependent> {
     return apiRequest<Dependent>(`/v1/dependents/${id}/`, 'PUT', dependent);
   },
@@ -172,11 +224,67 @@ export const api = {
     return apiRequest<void>(`/v1/dependents/${id}/`, 'DELETE');
   },
 
+  getDependents(params?: { page?: number; search?: string }): Promise<{ count: number; next: string | null; previous: string | null; results: Dependent[] }> {
+    const queryParts: string[] = [];
+    if (params?.page) queryParts.push(`page=${params.page}`);
+    if (params?.search) queryParts.push(`search=${encodeURIComponent(params.search)}`);
+    const query = queryParts.length > 0 ? `?${queryParts.join('&')}` : '';
+    return apiRequest<{ count: number; next: string | null; previous: string | null; results: Dependent[] }>(
+      `/v1/dependents/${query}`
+    );
+  },
+
   // Excel Import
   importExcel(file: File): Promise<ImportReport> {
     const formData = new FormData();
     formData.append('file', file);
     return apiRequest<ImportReport>('/v1/beneficiaries/import/', 'POST', formData, true);
+  },
+
+  importExcelFromUrl(url: string): Promise<ImportReport> {
+    return apiRequest<ImportReport>('/v1/beneficiaries/import-url/', 'POST', { url });
+  },
+
+  async exportExcel(filters: {
+    search?: string;
+    regionId?: string;
+    siteId?: string;
+    status?: string;
+  }): Promise<void> {
+    const queryParts: string[] = [];
+    if (filters.search) queryParts.push(`search=${encodeURIComponent(filters.search)}`);
+    if (filters.regionId) queryParts.push(`site__region=${filters.regionId}`);
+    if (filters.siteId) queryParts.push(`site=${filters.siteId}`);
+    if (filters.status) queryParts.push(`employment_status=${filters.status}`);
+    
+    const query = queryParts.length > 0 ? `?${queryParts.join('&')}` : '';
+    const url = `${API_BASE_URL}/v1/beneficiaries/export/${query}`;
+    
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    });
+    
+    if (!response.ok) {
+      let errorDetail = 'An error occurred while downloading the file.';
+      try {
+        const errorData = await response.json();
+        errorDetail = errorData.detail || errorData.message || JSON.stringify(errorData);
+      } catch {
+        errorDetail = `HTTP error ${response.status}: ${response.statusText}`;
+      }
+      throw new Error(errorDetail);
+    }
+    
+    const blob = await response.blob();
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.setAttribute('download', 'umis_roster_export.xlsx');
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode?.removeChild(link);
+    window.URL.revokeObjectURL(downloadUrl);
   },
 
   // Audit Logs
