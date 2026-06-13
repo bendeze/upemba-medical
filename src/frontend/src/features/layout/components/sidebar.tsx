@@ -27,12 +27,23 @@ interface SidebarProps {
 
 export function Sidebar({ onLogout, username = 'Admin', role = 'Superuser' }: SidebarProps) {
   const { t } = useTranslation();
-  const { activeTab, setActiveTab, isSidebarOpen } = useLayoutStore();
+  const { activeTab, setActiveTab, isSidebarOpen, setSidebarOpen } = useLayoutStore();
 
   return (
-    <aside className={`h-full bg-slate-900 text-slate-400 flex flex-col transition-all duration-300 ease-in-out shrink-0 overflow-hidden ${
-      isSidebarOpen ? 'w-64 border-r border-slate-800 opacity-100' : 'w-0 border-r-0 opacity-0 pointer-events-none'
-    }`}>
+    <>
+      {/* Mobile Backdrop Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-30 md:hidden animate-in fade-in duration-200"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      <aside className={`h-full bg-slate-900 text-slate-400 flex flex-col transition-all duration-300 ease-in-out shrink-0 overflow-hidden fixed inset-y-0 left-0 md:relative z-40 ${
+        isSidebarOpen 
+          ? 'w-64 border-r border-slate-800 opacity-100 translate-x-0' 
+          : 'w-0 border-r-0 opacity-0 pointer-events-none -translate-x-full md:translate-x-0'
+      }`}>
       {/* Constant-width wrapper to prevent contents from squishing or wrapping during transitions */}
       <div className="w-64 h-full flex flex-col justify-between shrink-0 overflow-y-auto">
         <div>
@@ -72,24 +83,17 @@ export function Sidebar({ onLogout, username = 'Admin', role = 'Superuser' }: Si
               {t('sidebar.consultations')}
             </button>
 
-            {/* Pharmacy (Disabled in phase 1) */}
+            {/* Pharmacy (Active) */}
             <button
-              disabled
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg border-none bg-transparent outline-none transition opacity-60 cursor-not-allowed text-slate-400 text-left font-medium"
-              title="Future pharmacy module"
+              onClick={() => setActiveTab('pharmacy')}
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg border-none bg-transparent outline-none transition cursor-pointer text-left ${
+                activeTab === 'pharmacy'
+                  ? 'bg-primary/10 text-primary font-semibold'
+                  : 'text-slate-400 hover:bg-slate-800 hover:text-white font-medium'
+              }`}
             >
               <Pill className="h-4 w-4" />
               {t('sidebar.pharmacy')}
-            </button>
-
-            {/* Laboratory (Disabled in phase 1) */}
-            <button
-              disabled
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg border-none bg-transparent outline-none transition opacity-60 cursor-not-allowed text-slate-400 text-left font-medium"
-              title="Future laboratory module"
-            >
-              <ClipboardList className="h-4 w-4" />
-              {t('sidebar.laboratory')}
             </button>
 
             {/* Reporting (Disabled in phase 1) */}
@@ -166,5 +170,6 @@ export function Sidebar({ onLogout, username = 'Admin', role = 'Superuser' }: Si
         </div>
       </div>
     </aside>
+    </>
   );
 }

@@ -94,6 +94,17 @@ export const api = {
     return data;
   },
 
+  async register(username: string, email: string, password: string): Promise<{ access: string; refresh: string }> {
+    const data = await apiRequest<{ access: string; refresh: string }>('/token/register/', 'POST', { username, email, password });
+    localStorage.setItem('umis_access_token', data.access);
+    localStorage.setItem('umis_refresh_token', data.refresh);
+    return data;
+  },
+
+  async getMe(): Promise<{ username: string; email: string; is_superuser: boolean; is_staff: boolean }> {
+    return apiRequest<{ username: string; email: string; is_superuser: boolean; is_staff: boolean }>('/me/');
+  },
+
   logout() {
     localStorage.removeItem('umis_access_token');
     localStorage.removeItem('umis_refresh_token');

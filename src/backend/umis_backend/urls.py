@@ -23,7 +23,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from core.views import IndexView
+from core.views import IndexView, RegisterView, MeView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,9 +31,12 @@ urlpatterns = [
     # JWT Authentication Endpoints
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/register/', RegisterView.as_view(), name='token_register'),
+    path('api/me/', MeView.as_view(), name='me'),
     
     # API Version 1 Endpoints
     path('api/v1/', include('beneficiaries.urls')),
+    path('api/v1/pharmacy/', include('pharmacy.urls')),
     
     # Serve pre-compiled static Next.js frontend assets (for offline wheel distribution)
     path('_next/<path:path>', serve, {'document_root': os.path.join(settings.BASE_DIR, 'core', 'static', '_next')}),

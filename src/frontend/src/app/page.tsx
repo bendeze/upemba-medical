@@ -21,9 +21,10 @@ import { DashboardPage } from '@/features/dashboard/components/dashboard-page';
 import { SettingsPage } from '@/features/settings/components/settings-page';
 import { DependentsPage } from '@/features/beneficiaries/components/dependents-page';
 import { RegionsPage } from '@/features/beneficiaries/components/regions-page';
+import { PharmacyDashboard } from '@/features/pharmacy/components/pharmacy-dashboard';
 
 // Lucide Icons
-import { ShieldAlert, Stethoscope, Lock, User } from 'lucide-react';
+import { ShieldAlert, Stethoscope, Lock, User, Mail } from 'lucide-react';
 
 export default function Home() {
   const { t } = useTranslation();
@@ -31,10 +32,14 @@ export default function Home() {
 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [checkingAuth, setCheckingAuth] = useState<boolean>(true);
+  const [loggedInUser, setLoggedInUser] = useState<{username: string, role: string} | null>(null);
   
   // Auth Form Credentials
+  const [isRegisterMode, setIsRegisterMode] = useState<boolean>(false);
   const [username, setUsername] = useState<string>('admin');
+  const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('adminpassword');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
 
@@ -58,9 +63,25 @@ export default function Home() {
   );
 
   useEffect(() => {
-    // Check initial auth status
-    setIsLoggedIn(api.isAuthenticated());
-    setCheckingAuth(false);
+    const checkAuth = async () => {
+      if (api.isAuthenticated()) {
+        try {
+          const me = await api.getMe();
+          setLoggedInUser({
+            username: me.username,
+            role: me.is_superuser ? 'Superuser' : 'User'
+          });
+          setIsLoggedIn(true);
+        } catch {
+          api.logout();
+          setIsLoggedIn(false);
+        }
+      } else {
+        setIsLoggedIn(false);
+      }
+      setCheckingAuth(false);
+    };
+    checkAuth();
   }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -68,10 +89,26 @@ export default function Home() {
     setLoginError(null);
     setIsLoggingIn(true);
     try {
-      await api.login(username, password);
+      if (isRegisterMode) {
+        if (password !== confirmPassword) {
+          throw new Error(t('register.passwordMatchError'));
+        }
+        if (!email.endsWith('@forgottenparks.org') && !email.endsWith('@forgttenparks.org')) {
+          throw new Error(t('register.emailError'));
+        }
+        await api.register(username, email, password);
+      } else {
+        await api.login(username, password);
+      }
+      
+      const me = await api.getMe();
+      setLoggedInUser({
+        username: me.username,
+        role: me.is_superuser ? 'Superuser' : 'User'
+      });
       setIsLoggedIn(true);
     } catch (err: any) {
-      setLoginError(err.message || 'Login failed. Verify server is running and credentials are correct.');
+      setLoginError(err.message || 'Authentication failed. Verify server is running and credentials are correct.');
     } finally {
       setIsLoggingIn(false);
     }
@@ -80,6 +117,7 @@ export default function Home() {
   const handleLogout = () => {
     api.logout();
     setIsLoggedIn(false);
+    setLoggedInUser(null);
     setSelectedEmployeeId(null);
   };
 
@@ -110,9 +148,11 @@ export default function Home() {
             <div className="inline-flex p-3 bg-teal-500/20 border border-teal-500/30 rounded-2xl mb-2">
               <Stethoscope className="h-8 w-8 text-teal-400" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-white">{t('login.title')}</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-white">
+              {isRegisterMode ? t('register.title') : t('login.title')}
+            </h1>
             <p className="text-sm text-slate-300">
-              {t('login.subtitle')}
+              {isRegisterMode ? t('register.subtitle') : t('login.subtitle')}
             </p>
           </div>
 
@@ -134,6 +174,25 @@ export default function Home() {
               </div>
             </div>
 
+            {isRegisterMode && (
+              <div className="space-y-1.5">
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                  {t('register.emailLabel')}
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder={t('register.emailPlaceholder')}
+                    className="w-full pl-9 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
+                  />
+                </div>
+              </div>
+            )}
+
             <div className="space-y-1.5">
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
                 {t('login.passwordLabel')}
@@ -151,6 +210,25 @@ export default function Home() {
               </div>
             </div>
 
+            {isRegisterMode && (
+              <div className="space-y-1.5">
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                  {t('register.confirmPasswordLabel')}
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                  <input
+                    type="password"
+                    required
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder={t('register.confirmPasswordPlaceholder')}
+                    className="w-full pl-9 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
+                  />
+                </div>
+              </div>
+            )}
+
             {loginError && (
               <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-xs text-red-300 leading-normal flex items-start gap-2">
                 <ShieldAlert className="h-4 w-4 shrink-0 mt-0.5" />
@@ -166,12 +244,25 @@ export default function Home() {
               {isLoggingIn ? (
                 <>
                   <LoaderIcon className="h-4 w-4 animate-spin" />
-                  {t('login.authorizing')}
+                  {isRegisterMode ? t('register.registering') : t('login.authorizing')}
                 </>
               ) : (
-                t('login.button')
+                isRegisterMode ? t('register.button') : t('login.button')
               )}
             </button>
+
+            <div className="text-center pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsRegisterMode(!isRegisterMode);
+                  setLoginError(null);
+                }}
+                className="text-sm text-teal-400 hover:text-teal-300 transition-colors"
+              >
+                {isRegisterMode ? t('register.switchToLogin') : t('register.switchToRegister')}
+              </button>
+            </div>
           </form>
 
           <div className="border-t border-white/10 pt-4 text-center">
@@ -189,7 +280,11 @@ export default function Home() {
     <div className="flex h-screen bg-background overflow-hidden">
       
       {/* 1. Sleek Left Sidebar Navigation */}
-      <Sidebar onLogout={handleLogout} />
+      <Sidebar 
+        onLogout={handleLogout} 
+        username={loggedInUser?.username} 
+        role={loggedInUser?.role} 
+      />
 
       {/* 2. Main Layout Workspace */}
       <main className={`flex-1 h-full flex flex-col min-w-0 overflow-hidden transition-all duration-300 ${
@@ -199,14 +294,16 @@ export default function Home() {
         <Navbar />
 
         {/* Scrollable page body */}
-        <div className="flex-1 overflow-y-auto p-8 flex flex-col justify-between">
-          <div className="space-y-8 mb-8">
+        <div className="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col justify-between">
+          <div className="space-y-4 md:space-y-8 mb-8">
             {activeTab === 'settings' ? (
               <SettingsPage />
             ) : activeTab === 'dependents' ? (
               <DependentsPage />
             ) : activeTab === 'regions' ? (
               <RegionsPage />
+            ) : activeTab === 'pharmacy' ? (
+              <PharmacyDashboard />
             ) : (
               <DashboardPage 
                 onViewDetails={handleOpenDetails}
