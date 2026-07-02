@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { pharmacyApi } from '../api/pharmacy-api';
 import { locationsApi } from '../../locations/api/locations-api';
 import { PharmacyStock, MedicineBatch, MedicalCenter } from '../types';
-import { AlertTriangle, Filter, Search } from 'lucide-react';
+import { AlertTriangle, Filter, Search, Package, FileSpreadsheet } from 'lucide-react';
 import { useTranslation } from '@/features/i18n/store/use-i18n-store';
+import { exportToCSV } from '../utils/export';
 
 export function StockView() {
   const { t } = useTranslation();
@@ -80,6 +81,29 @@ export function StockView() {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Package className="h-6 w-6 text-teal-600" />
+          <h2 className="text-xl font-bold text-slate-800">{t('pharmacy.tabStock')}</h2>
+        </div>
+        <button
+          onClick={() => {
+            const headers = [t('pharmacy.medicineName'), t('pharmacy.thSite'), t('pharmacy.thCurrentQuantity'), t('pharmacy.thStockStatus')];
+            const data = stocks.map(s => [
+              `${s.medicine.name} (${s.medicine.unit})`,
+              s.medical_center.name,
+              String(s.quantity),
+              s.quantity <= s.min_stock_level ? t('pharmacy.statusLow') : t('pharmacy.statusHealthy')
+            ]);
+            exportToCSV('current_stock', headers, data);
+          }}
+          className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 font-medium text-sm transition shadow-sm"
+        >
+          <FileSpreadsheet className="h-4 w-4 text-teal-600" />
+          {t('table.exportBtn')}
+        </button>
+      </div>
+
       {/* Alerts Section */}
       {(lowStockItems.length > 0 || alertExpiringBatches.length > 0) && (
         <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg shadow-sm">

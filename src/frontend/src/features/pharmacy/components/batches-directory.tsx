@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { pharmacyApi } from '../api/pharmacy-api';
 import { locationsApi } from '../../locations/api/locations-api';
 import { MedicineBatch, MedicalCenter } from '../types';
-import { Filter, Search, CalendarDays, AlertTriangle, Edit2, Trash2, Save, X, Package } from 'lucide-react';
+import { Filter, Search, CalendarDays, AlertTriangle, Edit2, Trash2, Save, X, Package, FileSpreadsheet } from 'lucide-react';
 import { useTranslation } from '@/features/i18n/store/use-i18n-store';
+import { exportToCSV } from '../utils/export';
 
 export function BatchesDirectory() {
   const { t } = useTranslation();
@@ -92,9 +93,28 @@ export function BatchesDirectory() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2 mb-4">
-        <CalendarDays className="h-6 w-6 text-teal-600" />
-        <h2 className="text-xl font-bold text-slate-800">{t('pharmacy.tabBatches')}</h2>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <CalendarDays className="h-6 w-6 text-teal-600" />
+          <h2 className="text-xl font-bold text-slate-800">{t('pharmacy.tabBatches')}</h2>
+        </div>
+        <button
+          onClick={() => {
+            const headers = [t('pharmacy.medicineName'), t('pharmacy.batchNumber'), t('pharmacy.center'), t('pharmacy.thExpirationDate'), t('pharmacy.thQty')];
+            const data = batches.map(b => [
+              `${b.medicine.name} (${b.medicine.unit})`,
+              b.lot_number || '',
+              b.medical_center.name || '',
+              b.expiration_date ? new Date(b.expiration_date).toLocaleDateString() : '',
+              String(b.quantity)
+            ]);
+            exportToCSV('medicine_batches', headers, data);
+          }}
+          className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 font-medium text-sm transition shadow-sm"
+        >
+          <FileSpreadsheet className="h-4 w-4 text-teal-600" />
+          {t('table.exportBtn')}
+        </button>
       </div>
 
       {/* Alerts Section */}

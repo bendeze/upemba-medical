@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { pharmacyApi } from '../api/pharmacy-api';
 import { Medicine } from '../types';
-import { Edit2, Pill, Plus, Save, X, Trash2 } from 'lucide-react';
+import { Edit2, Pill, Plus, Save, X, Trash2, FileSpreadsheet } from 'lucide-react';
 import { useTranslation } from '@/features/i18n/store/use-i18n-store';
+import { exportToCSV } from '../utils/export';
 
 export function MedicinesDirectory() {
   const { t } = useTranslation();
@@ -97,13 +98,26 @@ export function MedicinesDirectory() {
           <Pill className="h-5 w-5 text-teal-600" />
           {t('pharmacy.medicinesDirectory')}
         </h2>
-        <button
-          onClick={() => setIsAdding(!isAdding)}
-          className="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 font-medium text-sm transition"
-        >
-          <Plus className="h-4 w-4" />
-          {t('pharmacy.registerNewMedicine')}
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              const headers = [t('pharmacy.medicineName'), t('pharmacy.thUnit'), t('pharmacy.thMinStock')];
+              const data = medicines.map(m => [m.name, m.unit, String(m.min_stock_level || '')]);
+              exportToCSV('medicines_directory', headers, data);
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 font-medium text-sm transition shadow-sm"
+          >
+            <FileSpreadsheet className="h-4 w-4 text-teal-600" />
+            {t('table.exportBtn')}
+          </button>
+          <button
+            onClick={() => setIsAdding(!isAdding)}
+            className="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 font-medium text-sm transition shadow-sm"
+          >
+            <Plus className="h-4 w-4" />
+            {t('pharmacy.registerNewMedicine')}
+          </button>
+        </div>
       </div>
 
       {isAdding && (
