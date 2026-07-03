@@ -119,19 +119,19 @@ export function ConsultationForm({ onClose, onSuccess, initialData }: Props) {
     setError(null);
     
     if (patientType === 'EXTERNAL' && !externalName.trim()) {
-      setError("Please enter the patient's name.");
+      setError(t('consultations.errExternalName'));
       return;
     }
     if (patientType === 'EMPLOYEE' && !selectedEmployee) {
-      setError("Please select an employee.");
+      setError(t('consultations.errEmployee'));
       return;
     }
     if (patientType === 'DEPENDENT' && !selectedDependent) {
-      setError("Please select a dependent.");
+      setError(t('consultations.errDependent'));
       return;
     }
     if (!medicalCenterId) {
-      setError("Please select a medical center.");
+      setError(t('consultations.errMedicalCenter'));
       return;
     }
 
@@ -159,7 +159,7 @@ export function ConsultationForm({ onClose, onSuccess, initialData }: Props) {
       }
       onSuccess();
     } catch (err: any) {
-      setError(err.message || 'Failed to create consultation');
+      setError(err.message || t('consultations.errCreate'));
     } finally {
       setSubmitting(false);
     }
@@ -169,7 +169,7 @@ export function ConsultationForm({ onClose, onSuccess, initialData }: Props) {
     <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200">
         <div className="sticky top-0 bg-white/80 backdrop-blur-md px-6 py-4 border-b border-slate-100 flex items-center justify-between z-10">
-          <h2 className="text-xl font-bold text-slate-800">{initialData ? 'Edit Consultation' : 'New Consultation'}</h2>
+          <h2 className="text-xl font-bold text-slate-800">{initialData ? t('consultations.editTitle') : t('consultations.newTitle')}</h2>
           <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition">
             <X className="h-5 w-5" />
           </button>
@@ -186,31 +186,31 @@ export function ConsultationForm({ onClose, onSuccess, initialData }: Props) {
 
           {/* Section: Visit Details */}
           <div className="space-y-4">
-            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">1. Visit Details</h3>
+            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">{t('consultations.visitDetails')}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-600">Medical Center</label>
+                <label className="text-xs font-semibold text-slate-600">{t('consultations.medicalCenter')}</label>
                 <select 
                   value={medicalCenterId}
                   onChange={(e) => setMedicalCenterId(e.target.value)}
                   className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none"
                   required
                 >
-                  <option value="">Select center...</option>
+                  <option value="">{t('consultations.selectCenter')}</option>
                   {medicalCenters.map(mc => (
                     <option key={mc.id} value={mc.id}>{mc.name}</option>
                   ))}
                 </select>
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-600">Doctor / Clinician Name</label>
+                <label className="text-xs font-semibold text-slate-600">{t('consultations.doctorNameLabel')}</label>
                 <input 
                   type="text" 
                   required
                   value={doctorName}
                   onChange={(e) => setDoctorName(e.target.value)}
                   className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none"
-                  placeholder="e.g. Dr. Smith"
+                  placeholder={t('consultations.doctorNamePlaceholder')}
                 />
               </div>
             </div>
@@ -218,7 +218,7 @@ export function ConsultationForm({ onClose, onSuccess, initialData }: Props) {
 
           {/* Section: Patient Selection */}
           <div className="space-y-4">
-            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">2. Patient Information</h3>
+            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">{t('consultations.patientInfoSection')}</h3>
             <div className="flex gap-4 mb-4">
               {(['EXTERNAL', 'EMPLOYEE', 'DEPENDENT'] as const).map(type => (
                 <label key={type} className="flex items-center gap-2 cursor-pointer">
@@ -230,19 +230,19 @@ export function ConsultationForm({ onClose, onSuccess, initialData }: Props) {
                     onChange={() => handlePatientTypeChange(type)}
                     className="text-teal-600 focus:ring-teal-500"
                   />
-                  <span className="text-sm font-medium text-slate-700 capitalize">{type.toLowerCase()}</span>
+                  <span className="text-sm font-medium text-slate-700">{t(`table.type${type.charAt(0).toUpperCase()}${type.slice(1).toLowerCase()}` as any)}</span>
                 </label>
               ))}
             </div>
 
             {patientType === 'EXTERNAL' ? (
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-600">Patient Name</label>
+                <label className="text-xs font-semibold text-slate-600">{t('consultations.patientNameLabel')}</label>
                 <input 
                   type="text" 
                   value={externalName}
                   onChange={(e) => setExternalName(e.target.value)}
-                  placeholder="Enter patient full name"
+                  placeholder={t('consultations.patientNamePlaceholder')}
                   className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none"
                 />
               </div>
@@ -252,7 +252,7 @@ export function ConsultationForm({ onClose, onSuccess, initialData }: Props) {
                   <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                   <input 
                     type="text" 
-                    placeholder="Search employee by name or matricule..."
+                    placeholder={t('consultations.searchEmployee')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none"
@@ -281,13 +281,13 @@ export function ConsultationForm({ onClose, onSuccess, initialData }: Props) {
                       <p className="text-sm font-semibold text-teal-800">{selectedEmployee.first_name} {selectedEmployee.last_name}</p>
                       <p className="text-xs text-teal-600">{selectedEmployee.employee_number}</p>
                     </div>
-                    <button type="button" onClick={() => { setSelectedEmployee(null); setSelectedDependent(null); }} className="text-teal-600 hover:text-teal-800 text-xs font-medium">Change</button>
+                    <button type="button" onClick={() => { setSelectedEmployee(null); setSelectedDependent(null); }} className="text-teal-600 hover:text-teal-800 text-xs font-medium">{t('consultations.changeEmployee')}</button>
                   </div>
                 )}
 
                 {patientType === 'DEPENDENT' && selectedEmployee && (
                   <div className="space-y-1.5 mt-4">
-                    <label className="text-xs font-semibold text-slate-600">Select Dependent</label>
+                    <label className="text-xs font-semibold text-slate-600">{t('consultations.selectDependentLabel')}</label>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {selectedEmployee.dependents && selectedEmployee.dependents.length > 0 ? (
                         selectedEmployee.dependents.map(dep => (
@@ -300,11 +300,11 @@ export function ConsultationForm({ onClose, onSuccess, initialData }: Props) {
                             }`}
                           >
                             <div className="font-medium">{dep.full_name}</div>
-                            <div className="text-xs opacity-70">{dep.relationship}</div>
+                            <div className="text-xs opacity-70">{t(`dependents.${dep.relationship === 'SPOUSE' ? 'spouse' : 'child'}` as any)}</div>
                           </button>
                         ))
                       ) : (
-                        <div className="text-sm text-slate-500 col-span-2">No dependents found for this employee.</div>
+                        <div className="text-sm text-slate-500 col-span-2">{t('consultations.noDependentsFound')}</div>
                       )}
                     </div>
                   </div>
@@ -315,23 +315,23 @@ export function ConsultationForm({ onClose, onSuccess, initialData }: Props) {
 
           {/* Section: Clinical Notes */}
           <div className="space-y-4">
-            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">3. Clinical Details</h3>
+            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">{t('consultations.clinicalDetailsSection')}</h3>
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-600">Symptoms</label>
+              <label className="text-xs font-semibold text-slate-600">{t('consultations.symptoms')}</label>
               <textarea 
                 value={symptoms}
                 onChange={(e) => setSymptoms(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none min-h-[80px]"
-                placeholder="Patient complains of..."
+                placeholder={t('consultations.symptomsPlaceholder')}
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-600">Diagnosis</label>
+              <label className="text-xs font-semibold text-slate-600">{t('consultations.diagnosis')}</label>
               <textarea 
                 value={diagnosis}
                 onChange={(e) => setDiagnosis(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none min-h-[80px]"
-                placeholder="Final or working diagnosis..."
+                placeholder={t('consultations.diagnosisPlaceholder')}
               />
             </div>
           </div>
@@ -339,18 +339,18 @@ export function ConsultationForm({ onClose, onSuccess, initialData }: Props) {
           {/* Section: Prescription */}
           <div className="space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-              <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">4. Prescription (Optional)</h3>
+              <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">{t('consultations.prescriptionSection')}</h3>
               <button 
                 type="button" 
                 onClick={handleAddMedicine}
                 className="text-xs font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1 bg-teal-50 px-2 py-1 rounded"
               >
-                <Plus className="h-3 w-3" /> Add Medicine
+                <Plus className="h-3 w-3" /> {t('consultations.addMedicine')}
               </button>
             </div>
             
             {prescriptionItems.length === 0 ? (
-              <p className="text-sm text-slate-400 italic">No medicines prescribed.</p>
+              <p className="text-sm text-slate-400 italic">{t('consultations.noMedicinesPrescribed')}</p>
             ) : (
               <div className="space-y-3">
                 {prescriptionItems.map((item, index) => (
@@ -381,7 +381,7 @@ export function ConsultationForm({ onClose, onSuccess, initialData }: Props) {
                           setPrescriptionItems(newItems);
                         }}
                         className="w-full px-2 py-1.5 bg-white border border-slate-300 rounded text-sm focus:ring-2 focus:ring-teal-500 outline-none"
-                        placeholder="Qty"
+                        placeholder={t('consultations.qtyPlaceholder')}
                       />
                     </div>
                     <div className="flex-1">
@@ -394,7 +394,7 @@ export function ConsultationForm({ onClose, onSuccess, initialData }: Props) {
                           setPrescriptionItems(newItems);
                         }}
                         className="w-full px-2 py-1.5 bg-white border border-slate-300 rounded text-sm focus:ring-2 focus:ring-teal-500 outline-none"
-                        placeholder="Instructions (e.g. 1 pill morning/evening)"
+                        placeholder={t('consultations.instructionsPlaceholder')}
                       />
                     </div>
                     <button
@@ -416,14 +416,14 @@ export function ConsultationForm({ onClose, onSuccess, initialData }: Props) {
               onClick={onClose}
               className="px-6 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
               disabled={submitting}
               className="px-6 py-2 text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm transition disabled:opacity-50"
             >
-              {submitting ? 'Saving...' : 'Save Consultation'}
+              {submitting ? t('consultations.saveSaving') : t('consultations.saveBtn')}
             </button>
           </div>
         </form>

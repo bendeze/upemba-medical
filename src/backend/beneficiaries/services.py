@@ -1,3 +1,7 @@
+from datetime import datetime
+import io
+import requests
+from openpyxl.styles import Font, PatternFill, Alignment, Side, Border
 import re
 import uuid
 import openpyxl
@@ -465,7 +469,7 @@ class ExcelImportService:
                             existing_child.gender = gender_mapped
                             updated_child_fields["gender"] = [old_gender, gender_mapped]
                         
-                        from datetime import datetime
+
                         parsed_birth_date = None
                         if birth_date:
                             try:
@@ -546,8 +550,7 @@ class CloudImportService:
         Returns a BytesIO object with the file content.
         Raises ValueError if the URL or file content is invalid.
         """
-        import io
-        import requests
+
         
         # Google Sheets auto-conversion logic
         original_url = url.strip()
@@ -586,8 +589,7 @@ class EmployeeExportService:
         """
         Builds and returns an openpyxl Workbook from the given Employee queryset.
         """
-        from openpyxl.styles import Font, PatternFill, Alignment, Side, Border
-        import openpyxl
+
         
         wb = openpyxl.Workbook()
         ws = wb.active

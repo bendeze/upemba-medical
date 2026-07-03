@@ -23,7 +23,7 @@ export function BatchesDirectory() {
     fetchData();
   }, [selectedMedicalCenter]);
 
-  const fetchData = async () => {
+  async function fetchData() {
     try {
       setLoading(true);
       if (medicalCenters.length === 0) {
@@ -65,18 +65,18 @@ export function BatchesDirectory() {
       fetchData();
     } catch (err) {
       console.error(err);
-      alert('Failed to update batch');
+      alert(t('pharmacy.errUpdateBatch'));
     }
   };
 
   const handleDeleteBatch = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this batch? This should only be done if it was created by mistake.')) return;
+    if (!window.confirm(t('pharmacy.confirmDeleteBatch'))) return;
     try {
       await pharmacyApi.deleteMedicineBatch(id);
       fetchData();
     } catch (err) {
       console.error(err);
-      alert('Failed to delete batch');
+      alert(t('pharmacy.errDeleteBatch'));
     }
   };
 
@@ -179,7 +179,7 @@ export function BatchesDirectory() {
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{t('pharmacy.center')}</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{t('pharmacy.thExpirationDate')}</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{t('pharmacy.thQty')}</th>
-                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">{t('common.actions') || 'Actions'}</th>
+                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">{t('common.actions')}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-slate-200">
@@ -212,7 +212,7 @@ export function BatchesDirectory() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <span className={expClass}>
-                        {batch.expiration_date ? new Date(batch.expiration_date).toLocaleDateString() : 'N/A'}
+                        {batch.expiration_date ? new Date(batch.expiration_date).toLocaleDateString() : t('common.na')}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900 font-medium">
@@ -222,14 +222,14 @@ export function BatchesDirectory() {
                       <button 
                         onClick={() => openEditBatch(batch)}
                         className="p-1 text-slate-400 hover:text-blue-600 transition mx-1"
-                        title="Edit"
+                        title={t('common.edit')}
                       >
                         <Edit2 className="h-4 w-4" />
                       </button>
                       <button 
                         onClick={() => handleDeleteBatch(batch.id)}
                         className="p-1 text-slate-400 hover:text-red-600 transition mx-1"
-                        title="Delete"
+                        title={t('common.delete')}
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -248,7 +248,7 @@ export function BatchesDirectory() {
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
               <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
                 <Package className="h-5 w-5 text-teal-600" />
-                {t('common.edit') || 'Edit Batch'}
+                {t('pharmacy.editBatch')}
               </h2>
               <button onClick={() => setIsEditDialogOpen(false)} className="text-slate-400 hover:text-slate-600 transition">
                 <X className="h-5 w-5" />
@@ -256,16 +256,16 @@ export function BatchesDirectory() {
             </div>
             <form onSubmit={handleSaveEdit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Lot Number</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('pharmacy.lotNumber')}</label>
                 <input type="text" value={editLotNumber} onChange={e => setEditLotNumber(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none" />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('pharmacy.expirationDate') || 'Expiration Date'}</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('pharmacy.expirationDate')}</label>
                 <input type="date" value={editExpirationDate} onChange={e => setEditExpirationDate(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none" />
               </div>
               <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
                 <button type="button" onClick={() => setIsEditDialogOpen(false)} className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50">{t('common.cancel')}</button>
-                <button type="submit" className="px-5 py-2 rounded-lg text-white bg-teal-600 hover:bg-teal-700 font-semibold text-sm shadow-sm">{t('common.save') || 'Save'}</button>
+                <button type="submit" className="px-5 py-2 rounded-lg text-white bg-teal-600 hover:bg-teal-700 font-semibold text-sm shadow-sm">{t('common.save')}</button>
               </div>
             </form>
           </div>

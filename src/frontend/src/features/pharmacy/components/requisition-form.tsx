@@ -25,7 +25,7 @@ export function RequisitionForm() {
     fetchSitesAndMedicines();
   }, []);
 
-  const fetchSitesAndMedicines = async () => {
+  async function fetchSitesAndMedicines() {
     try {
       setMedicalCenters(await pharmacyApi.getMedicalCenters());
     } catch (e) {
@@ -143,7 +143,7 @@ export function RequisitionForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700">Lot Number *</label>
+              <label className="block text-sm font-medium text-slate-700">{t('pharmacy.lotNumber')} *</label>
               <input
                 type="text"
                 required

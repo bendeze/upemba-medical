@@ -23,7 +23,7 @@ export function PharmacyOverview() {
     fetchData();
   }, []);
 
-  const fetchData = async () => {
+  async function fetchData() {
     try {
       setLoading(true);
       const [stockData, batchData, movementData, centersData] = await Promise.all([
@@ -59,19 +59,19 @@ export function PharmacyOverview() {
       setEditingMedicalCenter(null);
       setIsMedicalCenterDialogOpen(false);
     } catch (err: any) {
-      alert(err.message || 'Failed to save center');
+      alert(err.message || t('pharmacy.errSaveCenter'));
     } finally {
       setIsCreatingMedicalCenter(false);
     }
   };
 
   const handleDeleteCenter = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this medical center?')) return;
+    if (!window.confirm(t('pharmacy.confirmDeleteCenter'))) return;
     try {
       await pharmacyApi.deleteMedicalCenter(id);
       setMedicalCenters(medicalCenters.filter(mc => mc.id !== id));
     } catch (err: any) {
-      alert(err.message || 'Failed to delete center');
+      alert(err.message || t('pharmacy.errDeleteCenter'));
     }
   };
 
@@ -228,10 +228,10 @@ export function PharmacyOverview() {
                       {mc.name}
                     </div>
                     <div className="flex items-center gap-1">
-                      <button onClick={() => openEditCenter(mc)} className="p-1 text-slate-400 hover:text-blue-600 transition" title="Edit">
+                      <button onClick={() => openEditCenter(mc)} className="p-1 text-slate-400 hover:text-blue-600 transition" title={t('common.edit')}>
                         <Edit2 className="h-4 w-4" />
                       </button>
-                      <button onClick={() => handleDeleteCenter(mc.id)} className="p-1 text-slate-400 hover:text-red-600 transition" title="Delete">
+                      <button onClick={() => handleDeleteCenter(mc.id)} className="p-1 text-slate-400 hover:text-red-600 transition" title={t('common.delete')}>
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
@@ -252,7 +252,7 @@ export function PharmacyOverview() {
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
               <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
                 <Building2 className="h-5 w-5 text-teal-600" />
-                {editingMedicalCenter ? t('common.edit') || 'Edit Center' : t('pharmacy.recordNewMedicalCenter')}
+                {editingMedicalCenter ? t('pharmacy.editCenter') : t('pharmacy.recordNewMedicalCenter')}
               </h2>
               <button onClick={() => { setIsMedicalCenterDialogOpen(false); setEditingMedicalCenter(null); }} className="text-slate-400 hover:text-slate-600 transition">
                 <X className="h-5 w-5" />

@@ -91,7 +91,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({ employee, onClose })
       }
       onClose();
     } catch (err: any) {
-      alert(err.message || 'An error occurred during submission.');
+      alert(err.message || t('employeeForm.errorSubmitting'));
     }
   };
 

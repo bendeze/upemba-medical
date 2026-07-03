@@ -3,7 +3,16 @@
 
 import { create } from 'zustand';
 
-export type TabId = 'beneficiaries' | 'settings' | 'dependents' | 'regions' | 'pharmacy' | 'consultations';
+export type Module = 
+  | 'DASHBOARD' 
+  | 'BENEFICIARIES'
+  | 'PHARMACY'
+  | 'LOCATIONS'
+  | 'SETTINGS'
+  | 'CONSULTATIONS'
+  | 'REPORTS';
+
+export type TabId = 'beneficiaries' | 'settings' | 'dependents' | 'regions' | 'pharmacy' | 'consultations' | 'reports';
 
 interface LayoutState {
   activeTab: TabId;

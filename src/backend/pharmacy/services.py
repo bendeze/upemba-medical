@@ -1,6 +1,6 @@
 import openpyxl
 from django.db import transaction
-from pharmacy.models import Medicine, StockMovement
+from pharmacy.models import Medicine, StockMovement, PrescriptionItem
 
 class PharmacyExcelService:
     @staticmethod
@@ -118,8 +118,6 @@ class PharmacyExcelService:
         '''
         item_quantities is a dict mapping prescription_item_id to quantity_to_dispense
         '''
-        from pharmacy.models import StockMovement, PrescriptionItem
-        
         movements = []
         for item_id, qty in item_quantities.items():
             if qty <= 0:

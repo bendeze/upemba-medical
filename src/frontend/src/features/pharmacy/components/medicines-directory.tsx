@@ -12,7 +12,7 @@ export function MedicinesDirectory() {
   
   const [isAdding, setIsAdding] = useState(false);
   const [newName, setNewName] = useState('');
-  const [newUnit, setNewUnit] = useState('Unité');
+  const [newUnit, setNewUnit] = useState(t('pharmacy.unitPlaceholder') || 'Unité');
   
   const [editingMedicine, setEditingMedicine] = useState<Medicine | null>(null);
   const [editName, setEditName] = useState('');
@@ -46,11 +46,11 @@ export function MedicinesDirectory() {
       });
       setIsAdding(false);
       setNewName('');
-      setNewUnit('Unité');
+      setNewUnit(t('pharmacy.unitPlaceholder') || 'Unité');
       fetchMedicines();
     } catch (err) {
       console.error(err);
-      alert('Failed to add medicine');
+      alert(t('pharmacy.errAddMed'));
     }
   };
 
@@ -76,18 +76,18 @@ export function MedicinesDirectory() {
       fetchMedicines();
     } catch (err) {
       console.error(err);
-      alert('Failed to update medicine');
+      alert(t('pharmacy.errUpdateMed'));
     }
   };
 
   const handleDeleteMedicine = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this medicine?')) return;
+    if (!window.confirm(t('pharmacy.confirmDeleteMed'))) return;
     try {
       await pharmacyApi.deleteMedicine(id);
       fetchMedicines();
     } catch (err) {
       console.error(err);
-      alert('Failed to delete medicine');
+      alert(t('pharmacy.errDeleteMed'));
     }
   };
 
@@ -163,14 +163,14 @@ export function MedicinesDirectory() {
                   <button 
                     onClick={() => openEditMedicine(med)}
                     className="p-1 text-slate-400 hover:text-blue-600 transition mx-1"
-                    title="Edit"
+                    title={t('common.edit')}
                   >
                     <Edit2 className="h-4 w-4" />
                   </button>
                   <button 
                     onClick={() => handleDeleteMedicine(med.id)}
                     className="p-1 text-slate-400 hover:text-red-600 transition mx-1"
-                    title="Delete"
+                    title={t('common.delete')}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -192,7 +192,7 @@ export function MedicinesDirectory() {
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
               <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
                 <Pill className="h-5 w-5 text-teal-600" />
-                {t('common.edit') || 'Edit Medicine'}
+                {t('pharmacy.editMedicine')}
               </h2>
               <button onClick={() => setIsEditDialogOpen(false)} className="text-slate-400 hover:text-slate-600 transition">
                 <X className="h-5 w-5" />
@@ -213,7 +213,7 @@ export function MedicinesDirectory() {
               </div>
               <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
                 <button type="button" onClick={() => setIsEditDialogOpen(false)} className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50">{t('common.cancel')}</button>
-                <button type="submit" className="px-5 py-2 rounded-lg text-white bg-teal-600 hover:bg-teal-700 font-semibold text-sm shadow-sm">{t('common.save') || 'Save'}</button>
+                <button type="submit" className="px-5 py-2 rounded-lg text-white bg-teal-600 hover:bg-teal-700 font-semibold text-sm shadow-sm">{t('common.save')}</button>
               </div>
             </form>
           </div>

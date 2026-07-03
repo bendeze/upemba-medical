@@ -87,7 +87,7 @@ export const ImportExcelDialog: React.FC<ImportExcelDialogProps> = ({ onClose })
       const res = await importExcelMutation.mutateAsync(file);
       setReport(res);
     } catch (err: any) {
-      setErrorText(err.message || 'Excel parsing failed.');
+      setErrorText(err.message || t('import.parsingError'));
     }
   };
 
@@ -272,7 +272,7 @@ export const ImportExcelDialog: React.FC<ImportExcelDialogProps> = ({ onClose })
 
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-slate-700 block">
-                    URL Google Sheets / Excel Cloud
+                    {t('import.cloudLabel')}
                   </label>
                   <input
                     type="text"
@@ -374,7 +374,7 @@ export const ImportExcelDialog: React.FC<ImportExcelDialogProps> = ({ onClose })
                         {getLogLevelIcon(log.level)}
                         <div className="leading-relaxed">
                           <span className="font-semibold mr-1.5">
-                            [{log.sheet}{log.row ? ` (Row ${log.row})` : ''}]
+                            [{log.sheet}{log.row ? ` (${t('import.row')} ${log.row})` : ''}]
                           </span>
                           {log.message}
                         </div>

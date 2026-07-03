@@ -23,6 +23,7 @@ import { DependentsPage } from '@/features/beneficiaries/components/dependents-p
 import { RegionsPage } from '@/features/beneficiaries/components/regions-page';
 import { PharmacyDashboard } from '@/features/pharmacy/components/pharmacy-dashboard';
 import { ConsultationsDashboard } from '@/features/consultations/components/consultations-dashboard';
+import { ReportsDashboard } from '@/features/reports/components/reports-dashboard';
 
 // Lucide Icons
 import { ShieldAlert, Stethoscope, Lock, User, Mail } from 'lucide-react';
@@ -109,7 +110,7 @@ export default function Home() {
       });
       setIsLoggedIn(true);
     } catch (err: any) {
-      setLoginError(err.message || 'Authentication failed. Verify server is running and credentials are correct.');
+      setLoginError(err.message || t('login.authFailed'));
     } finally {
       setIsLoggingIn(false);
     }
@@ -169,7 +170,7 @@ export default function Home() {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="e.g. admin"
+                  placeholder={t('login.usernamePlaceholder')}
                   className="w-full pl-9 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
                 />
               </div>
@@ -278,7 +279,7 @@ export default function Home() {
 
   /* --- SECURE ENTERPRISE DASHBOARD VIEW --- */
   return (
-    <div className="flex h-screen bg-background overflow-hidden">
+    <div className="flex h-screen bg-background overflow-hidden print:h-auto print:overflow-visible print:block">
       
       {/* 1. Sleek Left Sidebar Navigation */}
       <Sidebar 
@@ -288,15 +289,15 @@ export default function Home() {
       />
 
       {/* 2. Main Layout Workspace */}
-      <main className={`flex-1 h-full flex flex-col min-w-0 overflow-hidden transition-all duration-300 ${
+      <main className={`flex-1 h-full flex flex-col min-w-0 overflow-hidden transition-all duration-300 print:h-auto print:overflow-visible print:block ${
         isOverlayActive ? 'blur-[4px] pointer-events-none' : ''
       }`}>
         {/* Top welcome status header */}
         <Navbar />
 
         {/* Scrollable page body */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col justify-between">
-          <div className="space-y-4 md:space-y-8 mb-8">
+        <div className="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col justify-between print:overflow-visible print:p-0 print:block">
+          <div className="space-y-4 md:space-y-8 mb-8 print:m-0 print:space-y-4">
             {activeTab === 'settings' ? (
               <SettingsPage />
             ) : activeTab === 'dependents' ? (
@@ -307,6 +308,8 @@ export default function Home() {
               <PharmacyDashboard />
             ) : activeTab === 'consultations' ? (
               <ConsultationsDashboard />
+            ) : activeTab === 'reports' ? (
+              <ReportsDashboard />
             ) : (
               <DashboardPage 
                 onViewDetails={handleOpenDetails}

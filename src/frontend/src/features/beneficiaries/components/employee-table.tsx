@@ -91,7 +91,7 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({ onViewDetails, onE
         status,
       });
     } catch (err: any) {
-      setExportError(err.message || 'Failed to export roster.');
+      setExportError(err.message || t('table.exportError'));
     } finally {
       setIsExporting(false);
     }

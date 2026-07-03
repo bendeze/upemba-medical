@@ -99,11 +99,14 @@ export function Sidebar({ onLogout, username = 'Admin', role = 'Superuser' }: Si
               {t('sidebar.pharmacy')}
             </button>
 
-            {/* Reporting (Disabled in phase 1) */}
+            {/* Reporting (Active) */}
             <button
-              disabled
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg border-none bg-transparent outline-none transition opacity-60 cursor-not-allowed text-slate-400 text-left font-medium"
-              title="Future reporting module"
+              onClick={() => setActiveTab('reports')}
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg border-none bg-transparent outline-none transition cursor-pointer text-left ${
+                activeTab === 'reports'
+                  ? 'bg-primary/10 text-primary font-semibold'
+                  : 'text-slate-400 hover:bg-slate-800 hover:text-white font-medium'
+              }`}
             >
               <FolderGit className="h-4 w-4" />
               {t('sidebar.reporting')}

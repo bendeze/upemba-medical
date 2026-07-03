@@ -24,7 +24,7 @@ export function ConsumptionForm() {
     fetchSitesAndMedicines();
   }, []);
 
-  const fetchSitesAndMedicines = async () => {
+  async function fetchSitesAndMedicines() {
     try {
       setMedicalCenters(await pharmacyApi.getMedicalCenters());
     } catch (e) {
@@ -140,10 +140,10 @@ export function ConsumptionForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700">Lot Number (Optional)</label>
+              <label className="block text-sm font-medium text-slate-700">{t('pharmacy.lotNumberOpt')}</label>
               <input
                 type="text"
-                placeholder="Leave blank for automatic deduction"
+                placeholder={t('pharmacy.lotNumberPlaceholder')}
                 className="mt-1 block w-full border border-slate-300 rounded-md py-2 px-3 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
                 value={lotNumber}
                 onChange={(e) => setLotNumber(e.target.value)}

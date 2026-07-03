@@ -42,6 +42,7 @@ urlpatterns = [
     path('api/v1/', include('beneficiaries.urls')),
     path('api/v1/pharmacy/', include('pharmacy.urls')),
     path('api/v1/consultations/', include('consultations.urls')),
+    path('api/v1/reports/', include('reports.urls')),
     
     # Serve pre-compiled static Next.js frontend assets (for offline wheel distribution)
     path('_next/<path:path>', serve, {'document_root': os.path.join(settings.BASE_DIR, 'core', 'static', '_next')}),

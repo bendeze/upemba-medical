@@ -48,7 +48,7 @@ export function DashboardPage({ onViewDetails, onEdit }: DashboardPageProps) {
         <div 
           onClick={() => setActiveTab('dependents')}
           className="bg-white p-5 border border-border rounded-xl shadow-sm flex items-start gap-4 hover:shadow-md transition cursor-pointer hover:border-teal-400 group"
-          title="Click to view Dependents Lookup Registry"
+          title={t('dashboard.viewDependents')}
         >
           <div className="bg-secondary/40 p-3 border border-secondary rounded-xl text-secondary-foreground shrink-0 transition group-hover:bg-teal-50">
             <UserCheck className="h-5 w-5 text-teal-600 animate-pulse" />
@@ -63,7 +63,7 @@ export function DashboardPage({ onViewDetails, onEdit }: DashboardPageProps) {
         <div 
           onClick={() => setActiveTab('regions')}
           className="bg-white p-5 border border-border rounded-xl shadow-sm flex items-start gap-4 hover:shadow-md transition cursor-pointer hover:border-teal-400 group"
-          title="Click to view Regions & Sites Management"
+          title={t('dashboard.viewRegions')}
         >
           <div className="bg-muted p-3 border border-border rounded-xl text-muted-foreground shrink-0 transition group-hover:bg-teal-50">
             <Building2 className="h-5 w-5 text-slate-600" />

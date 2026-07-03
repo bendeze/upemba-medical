@@ -20,7 +20,7 @@ export function StockView() {
     fetchData();
   }, [selectedMedicalCenter]);
 
-  const fetchData = async () => {
+  async function fetchData() {
     try {
       setLoading(true);
       // Fetch sites if not fetched yet
@@ -235,7 +235,7 @@ export function StockView() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-slate-900">{stock.quantity} {stock.medicine.unit}s</div>
-                      <div className="text-xs text-slate-500">Min: {stock.min_stock_level}</div>
+                      <div className="text-xs text-slate-500">{t('pharmacy.minStock')}: {stock.min_stock_level}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {isLow ? (
@@ -252,7 +252,7 @@ export function StockView() {
                       {earliestExpDate ? (
                         <span>
                           {new Date(earliestExpDate).toLocaleDateString()}
-                          {expDates.length > 1 && <span className="ml-1 text-xs text-slate-400">({t('pharmacy.earliest') || 'Earliest'})</span>}
+                          {expDates.length > 1 && <span className="ml-1 text-xs text-slate-400">({t('pharmacy.earliest')})</span>}
                         </span>
                       ) : '-'}
                     </td>

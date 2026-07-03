@@ -72,7 +72,7 @@ export function RegionsPage() {
       setNewRegionName('');
       queryClient.invalidateQueries({ queryKey: ['regions'] });
     } catch (err: any) {
-      setRegionError(err.message || 'Failed to add region.');
+      setRegionError(err.message || t('regions.failedAddRegion'));
     } finally {
       setIsSubmittingRegion(false);
     }
@@ -90,7 +90,7 @@ export function RegionsPage() {
       setNewSiteName('');
       queryClient.invalidateQueries({ queryKey: ['sites'] });
     } catch (err: any) {
-      setSiteError(err.message || 'Failed to add site.');
+      setSiteError(err.message || t('regions.failedAddSite'));
     } finally {
       setIsSubmittingSite(false);
     }
@@ -106,7 +106,7 @@ export function RegionsPage() {
       queryClient.invalidateQueries({ queryKey: ['regions'] });
       queryClient.invalidateQueries({ queryKey: ['employees'] });
     } catch (err: any) {
-      alert(err.message || 'Failed to rename region.');
+      alert(err.message || t('regions.failedRenameRegion'));
     } finally {
       setIsUpdatingRegion(false);
     }
@@ -122,7 +122,7 @@ export function RegionsPage() {
       queryClient.invalidateQueries({ queryKey: ['sites'] });
       queryClient.invalidateQueries({ queryKey: ['employees'] });
     } catch (err: any) {
-      alert(err.message || 'Failed to rename site.');
+      alert(err.message || t('regions.failedRenameSite'));
     } finally {
       setIsUpdatingSite(false);
     }
@@ -139,7 +139,7 @@ export function RegionsPage() {
       queryClient.invalidateQueries({ queryKey: ['sites'] });
       queryClient.invalidateQueries({ queryKey: ['employees'] });
     } catch (err: any) {
-      setDeleteError(err.message || 'Failed to delete region.');
+      setDeleteError(err.message || t('regions.failedDeleteRegion'));
     } finally {
       setIsDeletingRegion(false);
     }

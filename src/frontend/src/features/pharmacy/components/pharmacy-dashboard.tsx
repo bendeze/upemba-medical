@@ -8,11 +8,10 @@ import { MedicinesDirectory } from './medicines-directory';
 import { BatchesDirectory } from './batches-directory';
 import { ConsumptionForm } from './consumption-form';
 import { HistoricalConsumptionForm } from './historical-consumption-form';
-import { PrescriptionsView } from './prescriptions-view';
 
 export function PharmacyDashboard() {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<'overview' | 'stock' | 'medicines' | 'batches' | 'prescriptions' | 'requisition' | 'consumption' | 'historical'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'stock' | 'medicines' | 'batches' | 'requisition' | 'consumption' | 'historical'>('overview');
 
   return (
     <div className="h-full flex flex-col bg-slate-50 overflow-hidden">
@@ -75,17 +74,7 @@ export function PharmacyDashboard() {
           <BookOpen className="h-4 w-4" />
           {t('pharmacy.tabMedicines')}
         </button>
-        <button
-          onClick={() => setActiveTab('prescriptions')}
-          className={`py-3 px-1 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-            activeTab === 'prescriptions'
-              ? 'border-teal-600 text-teal-700'
-              : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
-          } flex items-center gap-2`}
-        >
-          <List className="h-4 w-4" />
-          {t('pharmacy.tabPrescriptions')}
-        </button>
+
         <button
           onClick={() => setActiveTab('requisition')}
           className={`py-3 px-1 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
@@ -127,7 +116,7 @@ export function PharmacyDashboard() {
         {activeTab === 'stock' && <StockView />}
         {activeTab === 'batches' && <BatchesDirectory />}
         {activeTab === 'medicines' && <MedicinesDirectory />}
-        {activeTab === 'prescriptions' && <PrescriptionsView />}
+
         {activeTab === 'requisition' && <RequisitionForm />}
         {activeTab === 'consumption' && <ConsumptionForm />}
         {activeTab === 'historical' && <HistoricalConsumptionForm />}

@@ -79,7 +79,7 @@ export const DependentDialog: React.FC<DependentDialogProps> = ({
       }
       onClose();
     } catch (err: any) {
-      alert(err.message || `An error occurred while ${isEditMode ? 'updating' : 'adding'} dependent.`);
+      alert(err.message || (isEditMode ? t('dependentDialog.errorUpdating') : t('dependentDialog.errorAdding')));
     }
   };
 

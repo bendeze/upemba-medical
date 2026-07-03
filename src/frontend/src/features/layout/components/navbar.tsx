@@ -32,7 +32,7 @@ export function Navbar() {
         <button
           onClick={toggleSidebar}
           className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition cursor-pointer border-none bg-transparent outline-none flex items-center justify-center shrink-0"
-          title="Toggle navigation sidebar"
+          title={t('header.toggleSidebar')}
         >
           <Menu className="h-5 w-5" />
         </button>

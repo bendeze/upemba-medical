@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from datetime import datetime
 import openpyxl
 from openpyxl.styles import Font, PatternFill
 from django.core.management.base import BaseCommand
@@ -12,7 +13,6 @@ class Command(BaseCommand):
         desktop_path = os.path.join(str(Path.home()), 'Desktop', 'UMIS_Pharmacy_Backups')
         os.makedirs(desktop_path, exist_ok=True)
         
-        from datetime import datetime
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"Pharmacy_Backup_{timestamp}.xlsx"
         filepath = os.path.join(desktop_path, filename)

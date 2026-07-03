@@ -62,7 +62,7 @@ export const EmployeeDetailsDrawer: React.FC<EmployeeDetailsDrawerProps> = ({
       await deleteDependentMutation.mutateAsync(id);
       setDepToDelete(null);
     } catch (err: any) {
-      setDeleteDepError(err.message || 'Failed to delete dependent.');
+      setDeleteDepError(err.message || t('employee.drawer.failedDeleteDep'));
     } finally {
       setIsDeletingDep(false);
     }
@@ -97,10 +97,10 @@ export const EmployeeDetailsDrawer: React.FC<EmployeeDetailsDrawerProps> = ({
       <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-slate-50">
         <div>
           <h3 className="text-base font-bold text-slate-800">
-            Beneficiary Register Entry
+            {t('employee.drawer.title')}
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">
-            Full record file for UMIS medical department check.
+            {t('employee.drawer.subtitle')}
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -126,12 +126,12 @@ export const EmployeeDetailsDrawer: React.FC<EmployeeDetailsDrawerProps> = ({
         /* --- Loading State --- */
         <div className="flex-1 flex flex-col items-center justify-center gap-3">
           <Loader2 className="h-10 w-10 text-teal-600 animate-spin" />
-          <p className="text-slate-500 text-sm">Opening register file...</p>
+          <p className="text-slate-500 text-sm">{t('employee.drawer.loading')}</p>
         </div>
       ) : !employee ? (
         /* --- Error State --- */
         <div className="flex-1 flex flex-col items-center justify-center text-center p-6">
-          <p className="text-red-500 text-sm font-semibold">Failed to load register file.</p>
+          <p className="text-red-500 text-sm font-semibold">{t('employee.drawer.failedLoad')}</p>
         </div>
       ) : (
         /* --- Details Body --- */
