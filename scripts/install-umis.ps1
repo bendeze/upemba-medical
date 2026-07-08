@@ -146,7 +146,7 @@ $launchCmd = "cmd.exe /c umis-start"
 
 $vbsCode = 'Set sh = CreateObject("Wscript.Shell")' + "`r`n"
 $vbsCode += 'sh.Run "' + $launchCmd + '", 0, False'
-Set-Content -Path $VbsPath -Value $vbsCode -Encoding UTF8
+Set-Content -Path $VbsPath -Value $vbsCode -Encoding Ascii
 
 $WshShell = New-Object -ComObject WScript.Shell
 
