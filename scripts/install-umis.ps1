@@ -142,6 +142,16 @@ if (-not (Test-Path $scriptsDir)) {
     $scriptsDir = ""
 }
 
+# Download Icon
+$IconUrl = "https://raw.githubusercontent.com/bendeze/upemba-medical/main/docs/assets/icon.ico"
+$IconPath = Join-Path $UmisDir "icon.ico"
+Write-Host "[*] Fetching Desktop Icon..."
+try {
+    Invoke-WebRequest -Uri $IconUrl -OutFile $IconPath
+} catch {
+    Write-Host "[!] Could not fetch icon, using default." -ForegroundColor $Yellow
+}
+
 $launchCmd = "cmd.exe /c py -m cli"
 
 $vbsCode = 'Set sh = CreateObject("Wscript.Shell")' + "`r`n"
@@ -156,6 +166,7 @@ $StartupShortcut.TargetPath = "wscript.exe"
 $StartupShortcut.Arguments = "`"$VbsPath`""
 $StartupShortcut.WindowStyle = 7
 if ($scriptsDir) { $StartupShortcut.WorkingDirectory = $scriptsDir }
+if (Test-Path $IconPath) { $StartupShortcut.IconLocation = $IconPath }
 $StartupShortcut.Save()
 
 # Create Desktop Shortcut
@@ -164,6 +175,7 @@ $DesktopShortcut.TargetPath = "wscript.exe"
 $DesktopShortcut.Arguments = "`"$VbsPath`""
 $DesktopShortcut.WindowStyle = 7
 if ($scriptsDir) { $DesktopShortcut.WorkingDirectory = $scriptsDir }
+if (Test-Path $IconPath) { $DesktopShortcut.IconLocation = $IconPath }
 $DesktopShortcut.Save()
 
 Write-Host "[OK] VBScript Launcher created: $VbsPath" -ForegroundColor $Green

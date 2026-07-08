@@ -26,6 +26,16 @@ def main():
         print("-> Relational schema synchronized successfully.")
     except Exception as e:
         print(f"-> Critical failure initializing database migrations: {str(e)}")
+        print("\n[!] Launching Database Recovery Wizard...")
+        
+        # Spawn an interactive recovery wizard in a visible terminal
+        import subprocess
+        if sys.platform == "win32":
+            subprocess.run(["cmd.exe", "/c", "start", "cmd.exe", "/c", "py", "-m", "core.recovery"])
+        else:
+            # Fallback for linux/mac (mostly just for testing)
+            os.system("python3 -m core.recovery")
+            
         sys.exit(1)
         
     # 4. Programmatically seed default superuser credentials
