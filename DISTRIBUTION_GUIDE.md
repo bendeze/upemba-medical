@@ -107,6 +107,26 @@ You will see your beautiful **`UMIS.exe`** file, customized with a medical cross
 
 ---
 
+### C. The 1-Click Automated Installer (Recommended)
+This is the fastest and easiest way to distribute UMIS on employee computers. The script automatically installs Python (if missing), downloads the latest `.whl` package, configures silent background startup, and adds a Desktop shortcut—all in one command.
+
+#### 1. Internet Installation (via GitHub)
+If the employee computer has internet access, simply open **PowerShell** as an administrator (or normal user) and run:
+```powershell
+powershell -c "irm https://raw.githubusercontent.com/bendeze/upemba-medical/main/scripts/install-umis.ps1 | iex"
+```
+
+#### 2. Offline USB Installation
+If the employee computer is offline or if you prefer deploying from a USB:
+1. Place the generated `umis-1.x.x-py3-none-any.whl` file inside the same folder as `install-umis.ps1` on your USB drive.
+2. Open PowerShell in that folder and run:
+```powershell
+.\install-umis.ps1
+```
+The script will automatically detect the local `.whl` file and install it without reaching out to GitHub.
+
+---
+
 ## 4. Automating Startup on Employee Machines
 
 To provide a seamless experience for clinic employees, you can automate launching UMIS when their Windows machine starts up. We have provided an interactive startup utility at the root of the project:
