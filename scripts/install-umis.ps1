@@ -215,8 +215,10 @@ try {
     # Ignore errors if no server is running
 }
 
-# Run the VBS script to start server invisibly
-wscript.exe $VbsPath
+# Run the VBS script to start server invisibly.
+# We use explorer.exe to intentionally drop Administrator privileges
+# so that the user's "Stop UMIS" shortcut (which runs as a normal user) can kill it.
+explorer.exe $VbsPath
 
 Write-Host ""
 Write-Host "======================================================================" -ForegroundColor $Cyan

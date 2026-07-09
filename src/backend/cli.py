@@ -37,9 +37,12 @@ def main():
                         pid = line.strip().split()[-1]
                         if pid and pid != "0":
                             print(f"-> Terminating existing ghost process (PID: {pid}) on port {port}...")
-                            subprocess.run(f"taskkill /PID {pid} /F", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                            result = subprocess.run(f"taskkill /PID {pid} /F /T", shell=True, capture_output=True, text=True)
+                            if result.returncode != 0:
+                                print(f"[!] Failed to kill process {pid}. You may need Administrator privileges.")
+                                print(f"    Reason: {result.stderr.strip() or result.stdout.strip()}")
                             time.sleep(1) # Give OS a moment to free the socket
-            except Exception:
+            except Exception as e:
                 pass
                 
     if "--stop" in sys.argv:
