@@ -30,7 +30,7 @@ We offer a 1-click installer for Windows users (via PowerShell).
 ```powershell
 powershell -c "irm https://raw.githubusercontent.com/bonheurNE07/upemba-medical/main/scripts/install-umis.ps1 | iex"
 ```
-*For offline installation via USB, please refer to our [Distribution Guide](docs/DISTRIBUTION_GUIDE.md).*
+*For offline installation via USB, please refer to our [Distribution Guide](https://github.com/bendeze/upemba-umis/blob/main/docs/DISTRIBUTION.md).*
 
 ## Architecture
 
