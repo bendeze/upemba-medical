@@ -196,8 +196,19 @@ Write-Host "[OK] Start & Stop Desktop Shortcuts Created" -ForegroundColor $Green
 
 # 5. Start the Application immediately
 Write-Host ""
-Write-Host "[*] Launching UMIS right now..." -ForegroundColor $Yellow
-Start-Process -FilePath "wscript.exe" -ArgumentList "`"$VbsPath`""
+Write-Host "[*] Launching UMIS right now..." -ForegroundColor $Cyan
+
+# Kill any existing server process before starting a new one
+Write-Host "[*] Stopping any running server processes..." -ForegroundColor $Cyan
+try {
+    & $pythonExe -m cli --stop
+    Start-Sleep -Seconds 2
+} catch {
+    # Ignore errors if no server is running
+}
+
+# Run the VBS script to start server invisibly
+wscript.exe $VbsPath
 
 Write-Host ""
 Write-Host "======================================================================" -ForegroundColor $Cyan
