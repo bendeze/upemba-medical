@@ -162,6 +162,7 @@ export const translations = {
     'regions.deleteModalConfirm': 'Êtes-vous sûr de vouloir supprimer définitivement la région',
     'regions.deleteModalNoteLabel': 'Note :',
     'regions.deleteModalNoteText': 'La suppression de cette région supprimera également tous les sites de santé et affectera les employés et ayants droits qui y sont assignés.',
+    'regions.deleteModalConfirmBtn': 'Supprimer',
     'regions.failedAddRegion': 'Échec de l\'ajout de la région.',
     'regions.failedAddSite': 'Échec de l\'ajout du site.',
     'regions.failedRenameRegion': 'Échec du renommage de la région.',
@@ -804,6 +805,7 @@ export const translations = {
     'regions.failedRenameRegion': 'Failed to rename region.',
     'regions.failedRenameSite': 'Failed to rename site.',
     'regions.failedDeleteRegion': 'Failed to delete region.',
+    'regions.deleteModalConfirmBtn': 'Delete',
 
     // Consultations Details
     'consultations.detailsTitle': 'Consultation Details',

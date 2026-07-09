@@ -128,17 +128,15 @@ if (-not (Test-Path $UmisDir)) {
     New-Item -ItemType Directory -Path $UmisDir -Force | Out-Null
 }
 
-$VbsPath = Join-Path $UmisDir "umis-launcher.vbs"
+$BatPath = Join-Path $UmisDir "umis-launcher.bat"
 $StartupFolder = [System.Environment]::GetFolderPath('Startup')
 $StartupLnkPath = Join-Path $StartupFolder "UMIS.lnk"
 $DesktopFolder = [System.Environment]::GetFolderPath('Desktop')
 $DesktopLnkPath = Join-Path $DesktopFolder "UMIS.lnk"
 
-# Find python Scripts folder where umis-start lives
-# We use the python that installed it
+# Find python Scripts folder
 $scriptsDir = (& $pythonExe -c "import os, sys; print(os.path.join(os.path.dirname(sys.executable), 'Scripts'))").Trim()
 if (-not (Test-Path $scriptsDir)) {
-    # Fallback, just rely on PATH
     $scriptsDir = ""
 }
 
@@ -152,47 +150,60 @@ try {
     Write-Host "[!] Could not fetch icon, using default." -ForegroundColor $Yellow
 }
 
-$scriptsDir = (& $pythonExe -c "import os, sys; print(os.path.join(os.path.dirname(sys.executable), 'Scripts'))").Trim()
-
-$launchCmd = "cmd.exe /c `"`"$pythonExe`" -m cli > `"%USERPROFILE%\.umis\server.log`" 2>&1`""
-
-$vbsLaunchCmd = $launchCmd -replace '"', '""'
-$vbsCode = 'Set sh = CreateObject("Wscript.Shell")' + "`r`n"
-$vbsCode += 'sh.Run "' + $vbsLaunchCmd + '", 0, False'
-Set-Content -Path $VbsPath -Value $vbsCode -Encoding Ascii
+$batCode = "@echo off`r`n"
+$batCode += "title Serveur UMIS (Ne pas fermer cette fenetre)`r`n"
+$batCode += "echo ==========================================`r`n"
+$batCode += "echo   UMIS SERVER IS RUNNING`r`n"
+$batCode += "echo   Close this window to stop the server.`r`n"
+$batCode += "echo ==========================================`r`n"
+$batCode += "cd /d `"$scriptsDir`"`r`n"
+$batCode += "`"$pythonExe`" -m cli`r`n"
+$batCode += "pause`r`n"
+Set-Content -Path $BatPath -Value $batCode -Encoding Ascii
 
 $WshShell = New-Object -ComObject WScript.Shell
 
-# Create Startup Shortcut
+# Create Startup Shortcut (Optional, maybe we don't want it to pop up on startup?)
+# For now we keep it but it will show a window on boot.
 $StartupShortcut = $WshShell.CreateShortcut($StartupLnkPath)
-$StartupShortcut.TargetPath = "wscript.exe"
-$StartupShortcut.Arguments = "`"$VbsPath`""
-$StartupShortcut.WindowStyle = 7
+$StartupShortcut.TargetPath = $BatPath
+$StartupShortcut.WindowStyle = 1
 if ($scriptsDir) { $StartupShortcut.WorkingDirectory = $scriptsDir }
 if (Test-Path $IconPath) { $StartupShortcut.IconLocation = $IconPath }
 $StartupShortcut.Save()
 
 # Create Desktop Shortcut
 $DesktopShortcut = $WshShell.CreateShortcut($DesktopLnkPath)
-$DesktopShortcut.TargetPath = "wscript.exe"
-$DesktopShortcut.Arguments = "`"$VbsPath`""
-$DesktopShortcut.WindowStyle = 7
+$DesktopShortcut.TargetPath = $BatPath
+$DesktopShortcut.WindowStyle = 1
 if ($scriptsDir) { $DesktopShortcut.WorkingDirectory = $scriptsDir }
 if (Test-Path $IconPath) { $DesktopShortcut.IconLocation = $IconPath }
 $DesktopShortcut.Save()
 
-# Create Stop Desktop Shortcut
+# Remove the old Stop shortcut since closing the window now stops it (Wait, user requested it back!)
 $DesktopStopLnkPath = Join-Path $DesktopFolder "Stop UMIS.lnk"
+if (Test-Path $DesktopStopLnkPath) { Remove-Item $DesktopStopLnkPath -Force }
+
+$StopIconUrl = "https://raw.githubusercontent.com/bendeze/upemba-medical/main/docs/assets/umis-stop.ico"
+$StopIconPath = Join-Path $UmisDir "umis-stop.ico"
+Write-Host "[*] Fetching Stop Desktop Icon..."
+try {
+    Invoke-WebRequest -Uri $StopIconUrl -OutFile $StopIconPath
+} catch {
+    Write-Host "[!] Could not fetch stop icon, using default." -ForegroundColor $Yellow
+}
+
 $StopShortcut = $WshShell.CreateShortcut($DesktopStopLnkPath)
 $StopShortcut.TargetPath = "cmd.exe"
 $StopShortcut.Arguments = "/c `"`"$pythonExe`" -m cli --stop & timeout /t 3`""
 $StopShortcut.WindowStyle = 1
 if ($scriptsDir) { $StopShortcut.WorkingDirectory = $scriptsDir }
+if (Test-Path $StopIconPath) { $StopShortcut.IconLocation = $StopIconPath }
 $StopShortcut.Save()
 
-Write-Host "[OK] VBScript Launcher created: $VbsPath" -ForegroundColor $Green
-Write-Host "[OK] Added to Startup Folder (Boots silently with Windows)" -ForegroundColor $Green
-Write-Host "[OK] Start & Stop Desktop Shortcuts Created" -ForegroundColor $Green
+Write-Host "[OK] Batch Launcher created: $BatPath" -ForegroundColor $Green
+Write-Host "[OK] Added to Startup Folder" -ForegroundColor $Green
+Write-Host "[OK] Desktop Shortcut Created (Leaves window open so you can see logs and close to stop)" -ForegroundColor $Green
 
 # 5. Start the Application immediately
 Write-Host ""
@@ -207,8 +218,8 @@ try {
     # Ignore errors if no server is running
 }
 
-# Run the VBS script to start server invisibly
-wscript.exe $VbsPath
+# Run the BAT script
+Invoke-Item $BatPath
 
 Write-Host ""
 Write-Host "======================================================================" -ForegroundColor $Cyan
