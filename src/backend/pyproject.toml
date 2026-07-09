@@ -1,6 +1,6 @@
 [project]
 name = "umis"
-version = "1.0.12"
+version = "1.0.21"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -13,4 +13,5 @@ dependencies = [
     "openpyxl>=3.1.5",
     "pytest-django>=4.12.0",
     "requests>=2.32.3",
+    "waitress>=3.0.0",
 ]

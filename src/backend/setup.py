@@ -56,7 +56,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="umis",
-    version="1.0.20",
+    version="1.0.21",
     author="Upemba National Park Medical Department",
     author_email="bonheurndezenc@gmail.com",
     description="Upemba Medical Information System - Local Offline Package",
@@ -78,6 +78,7 @@ setup(
         "openpyxl>=3.1.5",
         "requests>=2.32.3",
         "uvicorn>=0.22.0",
+        "waitress>=3.0.0",
     ],
     entry_points={
         "console_scripts": [

@@ -108,30 +108,39 @@ def main():
     except Exception as e:
         print(f"-> browser redirect notice: open {url} manually. ({str(e)})")
         
-    # 6. Boot standard ASGI server using Uvicorn
+    # 6. Boot standard server
     print(f"\n[4/4] Starting local medical web server on port {local_port}...")
-    try:
-        import uvicorn
-        from umis_backend.asgi import application
-        uvicorn.run(application, host="127.0.0.1", port=local_port, log_level="info")
-    except ImportError:
-        # Fallback to standard waitress (extremely robust on Windows!) or wsgiref
+    
+    if sys.platform == "win32":
+        print("-> Windows environment detected. Using robust Waitress WSGI server.")
         try:
-            print("-> Uvicorn not found. Attempting to fall back to Waitress server...")
             import waitress
-            waitress.serve(django.core.handlers.wsgi.WSGIHandler(), host="127.0.0.1", port=local_port)
+            from umis_backend.wsgi import application
+            waitress.serve(application, host="127.0.0.1", port=local_port)
         except ImportError:
             print("-> Waitress not found. Running Python default development wsgiref server...")
             from wsgiref.simple_server import make_server
             from umis_backend.wsgi import application
             server = make_server('127.0.0.1', local_port, application)
             server.serve_forever()
-    finally:
-        print("\n[!] Application is shutting down. Running automated pharmacy backup...")
+    else:
+        print("-> Unix environment detected. Using high-performance Uvicorn ASGI server.")
         try:
-            call_command('export_pharmacy_backup', interactive=False)
-        except Exception as e:
-            print(f"-> Failed to run automated pharmacy backup: {str(e)}")
+            import uvicorn
+            from umis_backend.asgi import application
+            uvicorn.run(application, host="127.0.0.1", port=local_port, log_level="info")
+        except ImportError:
+            print("-> Uvicorn not found. Running Python default development wsgiref server...")
+            from wsgiref.simple_server import make_server
+            from umis_backend.wsgi import application
+            server = make_server('127.0.0.1', local_port, application)
+            server.serve_forever()
+            
+    print("\n[!] Application is shutting down. Running automated pharmacy backup...")
+    try:
+        call_command('export_pharmacy_backup', interactive=False)
+    except Exception as e:
+        print(f"-> Failed to run automated pharmacy backup: {str(e)}")
 
 if __name__ == '__main__':
     main()
